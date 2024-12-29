@@ -1,0 +1,36 @@
+rosbag2_bagfile_information:
+  compression_format: ''
+  compression_mode: ''
+  custom_data: {}
+  duration:
+    nanoseconds: 260500209993
+  files:
+  - duration:
+      nanoseconds: 260500209993
+    message_count: 55491
+    path: HKU_MB_2020-09-20-13-34-51.db3
+    starting_time:
+      nanoseconds_since_epoch: 1600623292122016691
+  message_count: 55491
+  relative_file_paths:
+  - HKU_MB_2020-09-20-13-34-51.db3
+  ros_distro: rosbags
+  starting_time:
+    nanoseconds_since_epoch: 1600623292122016691
+  storage_identifier: sqlite3
+  topics_with_message_count:
+  - message_count: 52886
+    topic_metadata:
+      name: /livox/imu
+      offered_qos_profiles: ''
+      serialization_format: cdr
+      type: sensor_msgs/msg/Imu
+      type_description_hash: RIHS01_7d9a00ff131080897a5ec7e26e315954b8eae3353c3f995c55faf71574000b5b
+  - message_count: 2605
+    topic_metadata:
+      name: /livox/lidar
+      offered_qos_profiles: ''
+      serialization_format: cdr
+      type: livox_ros_driver2/msg/CustomMsg
+      type_description_hash: RIHS01_94041b4794f52c1d81def2989107fc898a62dacb7a39d5dbe80d4b55e538bf6d
+  version: 8

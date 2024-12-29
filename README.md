@@ -12,16 +12,16 @@ ROS2: https://github.com/Ericsii/FAST_LIO_ROS2
 #### `src/laserMapping.cpp`
 1. 订阅的 ROS 话题：
 
-    1.1 sub_pcl  点云数据：
+    1.1 /livox/lidar   点云数据：
 
-    话题名称：lid_topic
+    话题名称：/livox/lidar
     话题类型：livox_interfaces::msg::CustomMsg
     描述：根据雷达类型选择不同的回调函数进行订阅。
     如果雷达类型是 AVIA，则订阅 livox_pcl_cbk 回调，否则订阅 standard_pcl_cbk 回调。
     
-    1.2 sub_imu  IMU 数据：
+    1.2 /livox/imu   IMU 数据：
 
-    话题名称：imu_topic
+    话题名称：/livox/imu
     话题类型：sensor_msgs::msg::Imu
     描述：订阅 IMU 数据，用于获取加速度、角速度、线性加速度等。
 
@@ -788,8 +788,8 @@ That panel is not available in Foxy. It won't make any harm to have it there, ju
 Play ROS2 bag:
 
 ```bash
-ros2 play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/2020-09-16-quick-shack.bag
-ros2 play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/HKU_MB_2020-09-20-13-34-51.bag
+ros2 bag play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/2020-09-16-quick-shack.bag
+ros2 bag play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/HKU_MB_2020-09-20-13-34-51.bag
 ...
 ```
 
@@ -835,3 +835,67 @@ Your Output will be as follows:
     times.txt
 ```
 Scans is all pcd you scan to make a whole map in `/home/cxx/Fast-LIO2_SC-SLAM/ros_ws/src/aloam_velodyne/utils/python/makeMergedMap.py`. Set your output folder and generate a whole map using it.
+
+
+### Evaluation
+A tool which can convert MULRAN DATASET to ROS2 bag, but it is in humble system and 22.04 Ubuntu.
+
+ROS2 Bag Convertor: https://github.com/ASIG-X/ros2bag_MulRan
+
+So it needs to be converted by other device and get the final bag.
+Or Use ROS1 bag. (Not Try)
+
+#### Riverside02 clip
+Use it is not OK, you need to remap topic names.
+```bash 
+ros2 bag play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/Riverside02.bag
+```
+Due to Fast-Lio2 subscribe `/livox/lidar` and `/livox/imu` topic, and this bag publishes 
+```bash
+/gps/fix
+/gt
+/imu/data_raw
+/os1_points
+/parameter_events
+/rosout
+```
+Change Them:
+```bash
+ros2 bag play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/Riverside02.bag --remap imu/data_raw:=/livox/imu os1_points:=/livox/lidar -read-ahead-queue-size 5000
+```
+But it failed because it subscribes `/livox/lidar` and `/livox/imu` topic, but the msg type is not right.
+```bash
+cxx@cxx-Precision-3660:~/Fast-LIO2_SC-SLAM$ ros2 node info /laser_mapping
+/laser_mapping
+  Subscribers:
+    /livox/imu: sensor_msgs/msg/Imu
+    /livox/lidar: livox_ros_driver2/msg/CustomMsg
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+  Publishers:
+    /Laser_map: sensor_msgs/msg/PointCloud2
+    /Odometry: nav_msgs/msg/Odometry
+    /cloud_effected: sensor_msgs/msg/PointCloud2
+    /cloud_registered: sensor_msgs/msg/PointCloud2
+    /cloud_registered_body: sensor_msgs/msg/PointCloud2
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /path: nav_msgs/msg/Path
+    /rosout: rcl_interfaces/msg/Log
+    /tf: tf2_msgs/msg/TFMessage
+  Service Servers:
+    /laser_mapping/describe_parameters: rcl_interfaces/srv/DescribeParameters
+    /laser_mapping/get_parameter_types: rcl_interfaces/srv/GetParameterTypes
+    /laser_mapping/get_parameters: rcl_interfaces/srv/GetParameters
+    /laser_mapping/list_parameters: rcl_interfaces/srv/ListParameters
+    /laser_mapping/set_parameters: rcl_interfaces/srv/SetParameters
+    /laser_mapping/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically
+    /map_save: std_srvs/srv/Trigger
+  Service Clients:
+
+  Action Servers:
+
+  Action Clients:
+```
+Lidar topic is `[livox_ros_driver2/msg/CustomMsg]` not `[sensor_msgs/msg/PointCloud2]`. 
+How to change the topic type?
+You need to convert these data according to livox_ros_driver2 custom msg type.
+So ... I choose to use Fast-LIO2 ROS2 bag.
