@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>livox_lidar_converter</name>
+  <version>0.0.0</version>
+  <description>Convert PointCloud2 messages to Livox CustomMsg</description>
+  <maintainer email="your_email@example.com">Your Name</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>livox_ros_driver2</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
