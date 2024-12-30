@@ -679,9 +679,10 @@ evo_rpe kitti /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02
 **Draw a plot**
 ```bash
 python3 myViewer.py
-...
+python3 makeMergedMap.py
+python3 draw_3D_image.py
+python3 show_gt_map.py
 ```
-
 
 Its Showing: 0-281 frames.
 

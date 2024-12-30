@@ -12,7 +12,7 @@ ROS2: https://github.com/Ericsii/FAST_LIO_ROS2
     1.1 /livox/lidar   点云数据：
 
     话题名称：/livox/lidar
-    话题类型：livox_interfaces::msg::CustomMsg
+    话题类型：livox_ros_driver2::msg::CustomMsg
     描述：根据雷达类型选择不同的回调函数进行订阅。
     如果雷达类型是 AVIA，则订阅 livox_pcl_cbk 回调，否则订阅 standard_pcl_cbk 回调。
     
