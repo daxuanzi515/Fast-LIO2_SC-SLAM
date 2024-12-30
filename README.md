@@ -678,7 +678,8 @@ evo_rpe kitti /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02
 
 **Draw a plot**
 ```bash
-
+python3 myViewer.py
+...
 ```
 
 
