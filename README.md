@@ -3,6 +3,9 @@ Fast-LIO2 + SC-SLAM
 
 ## My RUN EXPERIMENTS
 Skip Fast-LIO2-ROS PART
+
+Environment: Ubuntu 20.04, ROS2 Foxy, GTSAM 4.2.0, Eigen 3.3.7, python 3.8.10
+
 ### Bug Recording
 #### 1. Crashes when rosdep update
 ```bash 
