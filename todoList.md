@@ -49,7 +49,16 @@ FAST-LIO-SAM-QN:
 https://github.com/engcang/FAST-LIO-SAM-QN
 
 
-### 2024.12.30
-1.复现fast-lio2 + scan context++ + gtsam位姿图优化 1页
-2.mulran数据集转换 1页
+### 2024.12.30-31 presentation
+1.复现fast-lio2 + scan context++ + gtsam位姿图优化
+2.mulran数据集转换
 
+### 2024.1.1-1.5 presentation
+1.evo评估 时间戳对齐问题
+2.MulRan 数据集 / 给定的标准数据集 转换ROS2 bag
+3.看看Fast-LIO2的评估数据集
+
+发现的问题：
+Fast-Lio2 在长通道和狭长通道里面表现不好，特征点缺失，导致检测不到有效点云；这里在Riverside02里面可以看出来从300帧检测左右场景开始出现狭长通道，这时候由于特征点的缺失然后导致点云数据开始稀缺，计算的位姿开始偏移。
+
+[Brno-Urban-Dataset](https://github.com/Robotics-BUT/Brno-Urban-Dataset)
