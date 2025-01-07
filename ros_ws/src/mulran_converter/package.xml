@@ -21,6 +21,7 @@
 
   <exec_depend>OpenCV</exec_depend>
   <exec_depend>PCL</exec_depend>
+  <exec_depend>launch</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

@@ -50,5 +50,8 @@ target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_package()
