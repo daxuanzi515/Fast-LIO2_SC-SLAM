@@ -12,17 +12,3 @@ If we align them simply by the start frame, it can not be a effective way to eva
 Specifically, ATE image can be so large for testing data and ground-truth data, while RPE image is common.
 
 How to solve this problem?
-
-
-
-## Make Ros2Bag From MulRan Dataset
-### mytest.cpp
-Build and Run:
-```bash
-cd ~/Fast-LIO2_SC-SLAM/ros_ws
-colcon build --packages-select mulran_converter --symlink-install
-source install/setup.bash
-# ros2 run mulran_converter mulran_converter
-ros2 run mulran_converter mulran_converter --ros-args -p input_folder:=/home/cxx/Fast-LIO2_SC-SLAM/refs/examples/KAIST03_DATA -p output_bag_prefix:=/home/cxx/Fast-LIO2_SC-SLAM/ros_ws/test_hub
-
-```

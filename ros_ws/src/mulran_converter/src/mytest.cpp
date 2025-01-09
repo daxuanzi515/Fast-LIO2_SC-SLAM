@@ -65,7 +65,7 @@ public:
         gps_csv_path_ = input_folder_ + "/gps.csv";
         data_stamp_csv_path_ = input_folder_ + "/data_stamp.csv";
         ouster_folder_path_ = input_folder_ + "/Ouster";
-        output_bag_path_ = output_bag_prefix_ + "/DCC02.bag";
+        output_bag_path_ = output_bag_prefix_ + "/DCC03.bag";
 
         RCLCPP_INFO(this->get_logger(), "Input CSV paths: %s, %s", imu_csv_path_.c_str(), gps_csv_path_.c_str());
         RCLCPP_INFO(this->get_logger(), "Output bag path: %s", output_bag_path_.c_str());
@@ -297,7 +297,7 @@ void read_and_write_ouster_data_to_bag()
 
   int current_file_index = 0;
   int previous_file_index = 0;
-  RCLCPP_INFO(this->get_logger(), "Ouster file list: %s", std::to_string(ouster_file_list_).c_str());
+  RCLCPP_INFO(this->get_logger(), "ouster BIN file: %s", ouster_file_list_.front().c_str());
   RCLCPP_INFO(this->get_logger(), "Please Wait for a long time to Write LIDAR DATA~~~!");
   while(!ouster_thread_.data_queue_.empty()) {
     auto data = ouster_thread_.pop();

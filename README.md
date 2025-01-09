@@ -328,7 +328,8 @@ Showing Video: https://www.youtube.com/watch?v=nu8j4yaBMnw
 cd ~/Fast-LIO2_SC-SLAM/ros_ws
 colcon build --symlink-install
 source install/setup.bash
-ros2 launch fast_lio mapping.launch.py (config_path:=???)
+ros2 launch fast_lio mapping.launch.py
+(default is mid360.yaml config_file:=ouster64.yaml/avia.yaml)
 ```
 
 - In 2nd terminal BackEnd:

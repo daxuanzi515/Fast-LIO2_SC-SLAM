@@ -4,6 +4,8 @@
 evo_ape tum KAIST02.txt trajectory_tum.txt --plot --save_results results_ape_ori.zip --align
 # interpolated
 evo_ape tum KAIST02.txt interpolated_poses.txt --plot --save_results results_ape_inter.zip --align
+# fast-lio2
+evo_ape tum KAIST02.txt odom_poses_tum.txt --plot --save_results results_ape_fast_lio2.zip --align
 ```
 
 ## RPE
@@ -12,6 +14,8 @@ evo_ape tum KAIST02.txt interpolated_poses.txt --plot --save_results results_ape
 evo_rpe tum KAIST02.txt trajectory_tum.txt --plot --save_results results_rpe_ori.zip --align
 # interpolated
 evo_rpe tum KAIST02.txt interpolated_poses.txt --plot --save_results results_rpe_inter.zip --align
+# fast-lio2
+evo_rpe tum KAIST02.txt odom_poses_tum.txt --plot --save_results results_rpe_fast_lio2.zip --align
 ```
 
 ## RESULTS for KAIST02
@@ -56,6 +60,26 @@ PCD Map:
 
 ![](./ape_map_inter.png)
 
+#### Fast-LIO2
+```bash
+APE w.r.t. translation part (m)
+(with SE(3) Umeyama alignment)
+
+       max	45.172713
+      mean	17.345023
+    median	13.342426
+       min	3.415020
+      rmse	20.227989
+       sse	1036431.483299
+       std	10.407772
+```
+![](./fast-lio2/ape_fast_lio2.png)
+
+PCD Map:
+
+![](./fast-lio2/ape_map_fast_lio2.png)
+
+
 ### RPE
 #### Original
 ```bash
@@ -99,4 +123,24 @@ PCD Map:
 
 ![](./rpe_map_inter.png)
 
+#### Fast-LIO2
+```bash       
+RPE w.r.t. translation part (m)
+for delta = 1 (frames) using consecutive pairs
+(with SE(3) Umeyama alignment)
 
+       max	6.065953
+      mean	4.710646
+    median	4.685533
+       min	1.943667
+      rmse	4.743600
+       sse	56974.410873
+       std	0.558175
+```
+
+
+![](./fast-lio2/rpe_fast_lio2.png)
+
+PCD Map:
+
+![](./fast-lio2/rpe_map_fast_lio2.png)
