@@ -49,11 +49,11 @@ FAST-LIO-SAM-QN:
 https://github.com/engcang/FAST-LIO-SAM-QN
 
 
-### 2024.12.30-31 presentation
+### 2024.12.30-12.31 presentation
 1.复现fast-lio2 + scan context++ + gtsam位姿图优化
 2.mulran数据集转换
 
-### 2024.1.1-1.5 presentation
+### 2025.1.1-1.5 presentation
 1.evo评估 时间戳对齐问题
 2.MulRan 数据集 / 给定的标准数据集 转换ROS2 bag
 3.看看Fast-LIO2的评估数据集
@@ -62,3 +62,20 @@ https://github.com/engcang/FAST-LIO-SAM-QN
 Fast-Lio2 在长通道和狭长通道里面表现不好，特征点缺失，导致检测不到有效点云；这里在Riverside02里面可以看出来从300帧检测左右场景开始出现狭长通道，这时候由于特征点的缺失然后导致点云数据开始稀缺，计算的位姿开始偏移。
 
 [Brno-Urban-Dataset](https://github.com/Robotics-BUT/Brno-Urban-Dataset)
+
+
+### 2025.1.10-1.13 final report and presentation
+- slides：
+1.SC-PGO后端用了什么方法；
+2.这个后端的渲染效果图；
+mulran数据集上的结果，与fast-lio2的对比；
+为什么没跟lio-sam对比 (如果lio-sam效果太差)。
+（可选凑数）插值法的效果例子
+总时长：5分钟。
+
+- report：
+EXPERIMENTS 2页：
+1.fast-lio2直接跑hku的无ground truth数据集的建图+轨迹。
+2.sc-a-loam的结果，跟slides内容对齐。evo结果可以图片、表格都放。插值法例子数据也可以放。
+Related Work:
+预计3/4页，内容取自之前的综述slides。

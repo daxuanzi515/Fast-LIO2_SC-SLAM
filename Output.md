@@ -12,3 +12,13 @@ If we align them simply by the start frame, it can not be a effective way to eva
 Specifically, ATE image can be so large for testing data and ground-truth data, while RPE image is common.
 
 How to solve this problem?
+
+-----
+
+The problem is already **Solved**, please check the `refs/MulRan_dataset` for more details.
+
+1.First, convert the complete tum file `trajectory_tum.txt` with `times.txt` and `optimized_poses.txt`.
+
+2.Then, use `refs/MulRan_dataset/mulran_pose/*` as ground-truth data.
+
+3.Finally, follow each markdown file in `refs/MulRan_dataset/mytest/*` to launch evaluation using evo.
