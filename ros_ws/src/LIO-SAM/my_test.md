@@ -65,7 +65,7 @@ sudo gedit Macros.h
 Then, try to build again.
 ```bash
 rm -rf build/lio_sam install/lio_sam log/lio_sam
-colcon build --packages-select lio_sam --symlink-instal
+colcon build --packages-select lio_sam --symlink-install
 source install/setup.bash
 # success!
 Finished <<< lio_sam [42.7s]
@@ -108,8 +108,99 @@ ParamServer(std::string node_name, const rclcpp::NodeOptions & options) : Node(n
 }
 
 // change OUTPUT FOLDER
-declare_parameter("savePCDDirectory", "/home/cxx/Fast-LIO2_SC-SLAM/output/LOAM");
+declare_parameter("savePCDDirectory", "/home/cxx/Fast-LIO2_SC-SLAM/output/lio_sam");
 ```
 lidarTopic: `points` TYPE: `sensor_msgs::msg::PointCloud2`
 imuTopic: `imu/data` TYPE: `sensor_msgs::msg::Imu`
 gpsTopic: `lio_sam/odometry/gps` TYPE: `nav_msgs::msg::Odometry`
+
+Use MulRan Dataset link: https://github.com/kimdaebeom/lio-sam-for-mulran/tree/main
+
+Fix subscribed topics in `LIO-SAM/config/params.yaml`:
+```yaml 
+lio_sam:
+
+  # Topics
+  pointCloudTopic: "/raw_points"
+  imuTopic: "/livox/imu" 
+  odomTopic: "odometry/imu" 
+  gpsTopic: "/tcpfix"     
+
+  # Sensor Settings
+  sensor: ouster   
+  N_SCAN: 64   
+  Horizon_SCAN: 1024 
+  downsampleRate: 1   
+  lidarMinRange: 1.0
+  lidarMaxRange: 1000.0
+
+  # IMU Settings
+  imuAccNoise: 0.009939570888238808e-03
+  imuGyrNoise: 0.005636343949698187e-03
+  imuAccBiasN: 0.64356659353532566e-03
+  imuGyrBiasN: 0.35640318696367613e-03
+  imuGravity: 9.80511
+  imuRPYWeight: 0.01
+
+  # Extrinsics (lidar -> IMU)
+  extrinsicTrans: [1.77, -0.00, -0.05]
+  extrinsicRot: [-1.0, 0.0, 0.0,
+                  0.0, -1.0, 0.0,
+                  0.0, 0.0, 1.0]
+  extrinsicRPY: [-1.0,  0.0, 0.0,
+                 0.0, -1.0, 0.0,
+                  0.0, 0.0, 1.0]
+```
+
+
+Play your bag:
+```bash
+ros2 bag play DCC01.bag --topics /raw_points /livox/imu --rate 0.2 --read-ahead-queue-size 300000 -l
+```
+
+
+Some problems:
+```bash
+[lio_sam_imageProjection-4] [INFO] [1736505343.228905521] [lio_sam_imageProjection]: Waiting for IMU data ...
+[lio_sam_imageProjection-4] [INFO] [1736505343.611208889] [lio_sam_imageProjection]: Waiting for IMU data ...
+[lio_sam_imageProjection-4] [INFO] [1736505343.614393248] [lio_sam_imageProjection]: Waiting for IMU data ...
+[lio_sam_imageProjection-4] [INFO] [1736505343.615985533] [lio_sam_imageProjection]: Waiting for IMU data ...
+[lio_sam_imageProjection-4] [INFO] [1736505343.617590325] [lio_sam_imageProjection]: Waiting for IMU data ...
+[lio_sam_imageProjection-4] [INFO] [1736505343.977713102] [lio_sam_imageProjection]: Waiting for IMU data ...
+[lio_sam_imuPreintegration-3] terminate called after throwing an instance of 'gtsam::IndeterminantLinearSystemException'
+[lio_sam_imuPreintegration-3]   what():  
+[lio_sam_imuPreintegration-3] Indeterminant linear system detected while working near variable
+[lio_sam_imuPreintegration-3] 8646911284551352328 (Symbol: x8).
+[lio_sam_imuPreintegration-3] 
+[lio_sam_imuPreintegration-3] Thrown when a linear system is ill-posed.  The most common cause for this
+[lio_sam_imuPreintegration-3] error is having underconstrained variables.  Mathematically, the system is
+[lio_sam_imuPreintegration-3] underdetermined.  See the GTSAM Doxygen documentation at
+[lio_sam_imuPreintegration-3] http://borg.cc.gatech.edu/ on gtsam::IndeterminantLinearSystemException for
+[lio_sam_imuPreintegration-3] more information.
+[ERROR] [lio_sam_imuPreintegration-3]: process has died [pid 4026664, exit code -6, cmd '/home/cxx/Fast-LIO2_SC-SLAM/ros_ws/install/lio_sam/lib/lio_sam/lio_sam_imuPreintegration --ros-args -r __node:=lio_sam_imuPreintegration --params-file /home/cxx/Fast-LIO2_SC-SLAM/ros_ws/install/lio_sam/share/lio_sam/config/mine.yaml'].
+```
+Potential solutions: https://github.com/TixiaoShan/LIO-SAM/issues/110
+
+
+```bash
+ros2 launch lio_sam run.launch.py
+
+cd ~/Fast-LIO2_SC-SLAM/ros_ws
+colcon build --symlink-install
+source install/setup.bash
+ros2 launch fast_lio mapping.launch.py
+
+source install/setup.bash
+ros2 launch aloam_velodyne launcher.py
+
+ros2 bag play DCC01.bag --read-ahead-queue-size 90000
+
+ros2 bag play DCC01.bag --rate 0.5 --read-ahead-queue-size 90000 --topics /livox/lidar /livox/imu /gps/fix  
+
+
+ros2 daemon stop
+ros2 daemon start
+# then
+ros2 node list
+ros2 topic list
+```

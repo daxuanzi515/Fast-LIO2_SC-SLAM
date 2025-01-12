@@ -65,7 +65,7 @@ public:
         gps_csv_path_ = input_folder_ + "/gps.csv";
         data_stamp_csv_path_ = input_folder_ + "/data_stamp.csv";
         ouster_folder_path_ = input_folder_ + "/Ouster";
-        output_bag_path_ = output_bag_prefix_ + "/DCC03.bag";
+        output_bag_path_ = output_bag_prefix_ + "/my_test.bag";
 
         RCLCPP_INFO(this->get_logger(), "Input CSV paths: %s, %s", imu_csv_path_.c_str(), gps_csv_path_.c_str());
         RCLCPP_INFO(this->get_logger(), "Output bag path: %s", output_bag_path_.c_str());
@@ -150,7 +150,8 @@ void read_and_write_imu_data_to_bag() {
       if(length != 8 && length != 17)
         break;
       if(length == 8) {
-        imu_data.header.stamp = rclcpp::Time(stamp);
+        imu_data.header.stamp = rclcpp::Time(stamp, RCL_ROS_TIME);
+        // RCLCPP_INFO(this->get_logger(), "IMU Timestamp: %ld", imu_data.header.stamp);
         imu_data.header.frame_id = "imu";
         imu_data.orientation.x = q_x;
         imu_data.orientation.y = q_y;
@@ -160,7 +161,8 @@ void read_and_write_imu_data_to_bag() {
         imu_data_[stamp] = imu_data;
         imu_data_version_ = 1;
       } else if(length == 17) {
-        imu_data.header.stamp = rclcpp::Time(stamp);
+        imu_data.header.stamp = rclcpp::Time(stamp, RCL_ROS_TIME);
+        // RCLCPP_INFO(this->get_logger(), "IMU Timestamp: %ld", imu_data.header.stamp);
         imu_data.header.frame_id = "imu";
         imu_data.orientation.x = q_x;
         imu_data.orientation.y = q_y;
@@ -201,6 +203,7 @@ void read_and_write_imu_data_to_bag() {
       auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
       bag_message->topic_name = "/livox/imu";
       auto serialized_data = std::make_shared<rcutils_uint8_array_t>();
+      bag_message->time_stamp = imu_msg.header.stamp.nanosec;
       serialized_data->buffer = serialized_msg.get_rcl_serialized_message().buffer;
       serialized_data->buffer_length = serialized_msg.get_rcl_serialized_message().buffer_length;
       bag_message->serialized_data = serialized_data;
@@ -231,7 +234,7 @@ void read_and_write_gps_data_to_bag() {
           == 13
           )
     {
-      gps_data.header.stamp = rclcpp::Time(stamp);
+      gps_data.header.stamp = rclcpp::Time(stamp, RCL_ROS_TIME);
       gps_data.header.frame_id = "gps";
       gps_data.latitude = latitude;
       gps_data.longitude = longitude;
@@ -247,11 +250,12 @@ void read_and_write_gps_data_to_bag() {
       // bag_writer.write(gps_msg, "/gps/fix", rclcpp::Time(gps_msg.header.stamp));
       rclcpp::Serialization<sensor_msgs::msg::NavSatFix> serializer;
       rclcpp::SerializedMessage serialized_msg;
-      serializer.serialize_message(&gps_data, &serialized_msg);
+      serializer.serialize_message(&gps_msg, &serialized_msg);
 
       auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
       bag_message->topic_name = "/gps/fix";
       auto serialized_data = std::make_shared<rcutils_uint8_array_t>();
+      bag_message->time_stamp = gps_msg.header.stamp.nanosec;
       serialized_data->buffer = serialized_msg.get_rcl_serialized_message().buffer;
       serialized_data->buffer_length = serialized_msg.get_rcl_serialized_message().buffer_length;
       bag_message->serialized_data = serialized_data;
@@ -303,7 +307,7 @@ void read_and_write_ouster_data_to_bag()
     auto data = ouster_thread_.pop();
 
     if(std::to_string(data) + ".bin" == ouster_next_.first) {
-      ouster_next_.second.header.stamp = rclcpp::Time(data);
+      ouster_next_.second.header.stamp = rclcpp::Time(data, RCL_ROS_TIME);
       ouster_next_.second.header.frame_id = "ouster"; // frame ID
       // bag_writer.write(ouster_next_.second, "/raw_points", rclcpp::Time(data));
       std::shared_ptr<sensor_msgs::msg::PointCloud2> msg_ptr = std::make_shared<sensor_msgs::msg::PointCloud2>(ouster_next_.second);
@@ -317,6 +321,7 @@ void read_and_write_ouster_data_to_bag()
       auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
       bag_message->topic_name = "/raw_points";
       auto serialized_data = std::make_shared<rcutils_uint8_array_t>();
+      bag_message->time_stamp = ouster_next_.second.header.stamp.nanosec;
       serialized_data->buffer = serialized_msg.get_rcl_serialized_message().buffer;
       serialized_data->buffer_length = serialized_msg.get_rcl_serialized_message().buffer_length;
       bag_message->serialized_data = serialized_data;
@@ -348,7 +353,7 @@ void read_and_write_ouster_data_to_bag()
         file.close();
 
         pcl::toROSMsg(cloud, publish_cloud);
-        publish_cloud.header.stamp = rclcpp::Time(data);
+        publish_cloud.header.stamp = rclcpp::Time(data, RCL_ROS_TIME);
         publish_cloud.header.frame_id = "ouster";
         // bag_writer.write(publish_cloud, "/os1_points", rclcpp::Time(data));
 
@@ -362,6 +367,7 @@ void read_and_write_ouster_data_to_bag()
         // Create a bag message and write it to the ROS bag
         auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
         bag_message->topic_name = "/raw_points";
+        bag_message->time_stamp = publish_cloud.header.stamp.nanosec;
         auto serialized_data = std::make_shared<rcutils_uint8_array_t>();
         serialized_data->buffer = serialized_msg.get_rcl_serialized_message().buffer;
         serialized_data->buffer_length = serialized_msg.get_rcl_serialized_message().buffer_length;
@@ -463,6 +469,7 @@ void writeToBag(const livox_ros_driver2::msg::CustomMsg& custom_msg) {
     // Create a bag message and write it to the ROS bag
     auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
     bag_message->topic_name = "/livox/lidar";
+    bag_message->time_stamp = custom_msg.header.stamp.nanosec;
     auto serialized_data = std::make_shared<rcutils_uint8_array_t>();
     serialized_data->buffer = serialized_msg.get_rcl_serialized_message().buffer;
     serialized_data->buffer_length = serialized_msg.get_rcl_serialized_message().buffer_length;
