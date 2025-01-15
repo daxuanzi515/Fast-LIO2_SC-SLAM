@@ -438,7 +438,7 @@ Due to Fast-Lio2 subscribe `/livox/lidar` and `/livox/imu` topic, and this bag p
 ```
 Try to change Them:
 ```bash
-ros2 bag play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/Riverside02.bag --remap imu/data_raw:=/livox/imu os1_points:=/livox/lidar -read-ahead-queue-size 5000
+ros2 bag play /home/cxx/Fast-LIO2_SC-SLAM/refs/examples/Riverside02.bag --remap imu/data_raw:=/livox/imu os1_points:=/livox/lidar --read-ahead-queue-size 5000
 ```
 But it failed because it subscribes `/livox/lidar` and `/livox/imu` topic, but the msg type is not right.
 ```bash
@@ -688,7 +688,7 @@ python3 draw_3D_image.py
 python3 show_gt_map.py
 ```
 
-Its Showing: 0-281 frames.
+Its Showing: 0-281 frames. Somethings wrong with the time stamp.
 
 ##### 1. Saved pcd map
 ![](refs/exp-imgs/Riverside02_bag_1.png)
@@ -706,3 +706,30 @@ ATE(APE): It should be lower instead of increasing.
 RPE: It should be lower by the time.
 
 ![](refs/MulRan_dataset/mytest/0_281_frame/rpe_1.png)
+
+
+Another Example from KAIST02 dataset. This is a correct result.
+
+##### 1. Saved pcd map from backend
+![](refs/exp-imgs/exps/Running/KAIST02/kaist02-backend-1.png)
+
+##### 2. Evo check
+Estimated and ground truth comparison:
+
+ATE(APE): It should be lower instead of increasing.
+
+![](refs/exp-imgs/exps/Errors/KAIST02/ape_ori.png)
+
+![](refs/exp-imgs/exps/Errors/KAIST02/ape_map_ori.png)
+
+RPE: It should be lower by the time.
+
+![](refs/exp-imgs/exps/Errors/KAIST02/rpe_ori.png)
+
+![](refs/exp-imgs/exps/Errors/KAIST02/rpe_map_ori.png)
+
+##### 3. Use Interpoloator to get a better RPE
+
+![](refs/exp-imgs/exps/Errors/KAIST02/rpe_inter.png)
+
+![](refs/exp-imgs/exps/Errors/KAIST02/rpe_map_inter.png)
