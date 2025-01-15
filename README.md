@@ -628,48 +628,34 @@ git clone git@github.com:HIT-Ygq/MulRan_dataset.git
 cd MulRan_dataset
 python3 MulRan_2_tumformat.py -p /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02 -o /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02
 ```
-Convert optimized_poses.txt to tum_optimized_poses.txt:
-```bash
-python3 convert_poses_TUM.py
-```
-Codes:
+
+Convert estimated poses to trajectory_tum.txt.
+
+edit your file_name in python3 script
 ```python
-import numpy as np
-from scipy.spatial.transform import Rotation as R
-
-def tum_to_kitti(tum_file, kitti_file):
-    """
-    Convert TUM format data to KITTI format.
-    Args:
-        tum_file (str): Path to TUM format file.
-        kitti_file (str): Path to save KITTI format file.
-    """
-    with open(tum_file, 'r') as f1, open(kitti_file, 'w') as f2:
-        lines = f1.readlines()
-        for line in lines[0: 280]:
-            data = list(map(float, line.strip().split()))
-            # TUM 格式: timestamp x y z qx qy qz qw
-            timestamp, x, y, z, qx, qy, qz, qw = data
-            # 将四元数转换为旋转矩阵
-            rotation = R.from_quat([qx, qy, qz, qw])
-            R_mat = rotation.as_matrix()  # 3x3 矩阵
-            # 转换为 KITTI 格式: R11 R12 R13 tx R21 R22 R23 ty R31 R32 R33 tz
-            kitti_row = list(R_mat.flatten()) + [x, y, z]
-            kitti_row_str = " ".join(map(str, kitti_row))
-            f2.write(kitti_row_str + "\n")
-
-ins = f"/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02/tum_ground_truth.txt"
-out = f"/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02/kitti_ground_truth.txt"
-tum_to_kitti(ins, out)
+# fast-lio2 outputs
+times_file = "/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/DCC01/times.txt"
+poses_file = "/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/DCC01/odom_poses.txt"
+output_file = "/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/DCC01/odom_poses_tum.txt"
+# SC-PGO outputs
+times_file = "/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/DCC01/times.txt"
+poses_file = "/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/DCC01/optimized_poses.txt"
+output_file = "/home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/DCC01/trajecotry_tum.txt"
 ```
+Run commands:
+```bash
+python3 /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest.py
+```
+Then you will get a TUM type trajectory file of Fast-LIO2 and SC-PGO.
+
 **APE** (ATE)
-Save Results in current folder using TUM:
+Save Results in current folder using TUM: (default)
 ```bash
 cd ~/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02
 evo_ape tum tum_ground_truth.txt tum_optimized_poses.txt --plot --save_results results_ape.zip --align
 evo_res results_ape.zip
 ```
-using kitti:
+using kitti: (optional)
 ```bash
 evo_ape kitti /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02/kitti_ground_truth.txt /home/cxx/Fast-LIO2_SC-SLAM/refs/MulRan_dataset/mytest/Riverside02/optimized_poses.txt --plot --save_results results_ape.zip --align
 evo_res results_ape.zip
@@ -687,8 +673,7 @@ python3 makeMergedMap.py
 python3 draw_3D_image.py
 python3 show_gt_map.py
 ```
-
-Its Showing: 0-281 frames. Somethings wrong with the time stamp.
+For Riverside02 dataset 0-281 frames: Somethings wrong with the time stamp.
 
 ##### 1. Saved pcd map
 ![](refs/exp-imgs/Riverside02_bag_1.png)

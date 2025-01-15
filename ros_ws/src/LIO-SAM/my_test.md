@@ -118,13 +118,23 @@ Use MulRan Dataset link: https://github.com/kimdaebeom/lio-sam-for-mulran/tree/m
 
 Fix subscribed topics in `LIO-SAM/config/params.yaml`:
 ```yaml 
-lio_sam:
-
   # Topics
+  # for livox_ros_driver2 type bag
   pointCloudTopic: "/raw_points"
   imuTopic: "/livox/imu" 
   odomTopic: "odometry/imu" 
-  gpsTopic: "/tcpfix"     
+  gpsTopic: "/gps/fix"     
+
+  # for sensor_msgs type bag
+  # pointCloudTopic: "/os1_points"                   # Point cloud data
+  # imuTopic: "/imu/data_raw"                        # IMU data
+  # odomTopic: "odometry/imu"                    # IMU pre-preintegration odometry, same frequency as IMU
+  # gpsTopic: "/gps/fix"   
+  # Frames
+  lidarFrame: "lidar_link"
+  baselinkFrame: "base_link"
+  odometryFrame: "odom"
+  mapFrame: "map"
 
   # Sensor Settings
   sensor: ouster   
@@ -153,7 +163,7 @@ lio_sam:
 ```
 
 
-Play your bag:
+Play your bag with livox_ros_driver2 type:
 ```bash
 ros2 bag play DCC01.bag --topics /raw_points /livox/imu --rate 0.2 --read-ahead-queue-size 300000 -l
 ```
@@ -182,22 +192,13 @@ Some problems:
 Potential solutions: https://github.com/TixiaoShan/LIO-SAM/issues/110
 
 
+With sensor_msgs::msg::Imu type bag, use:
 ```bash
 ros2 launch lio_sam run.launch.py
 
-cd ~/Fast-LIO2_SC-SLAM/ros_ws
-colcon build --symlink-install
-source install/setup.bash
-ros2 launch fast_lio mapping.launch.py
+ros2 bag play DCC01.bag --rate 0.25 # necessary to avoid drifting the slow playback rate is in [0.1, 0.25]
 
-source install/setup.bash
-ros2 launch aloam_velodyne launcher.py
-
-ros2 bag play DCC01.bag --read-ahead-queue-size 90000
-
-ros2 bag play DCC01.bag --rate 0.5 --read-ahead-queue-size 90000 --topics /livox/lidar /livox/imu /gps/fix  
-
-
+# Error solution:
 ros2 daemon stop
 ros2 daemon start
 # then

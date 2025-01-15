@@ -399,6 +399,36 @@ public:
         return thisPose6D;
     }
 
+
+    void saveTrajectoryToTXT(const std::string& filename, const std::string& timename, pcl::PointCloud<PointTypePose>& poses)
+    {
+        std::ofstream outFile(filename.c_str(), std::ios::out | std::ios::trunc);
+        if (!outFile.is_open())
+        {
+            std::cerr << "Error: cannot open file " << filename << std::endl;
+            return;
+        }
+        std::ofstream timeFile(timename.c_str(), std::ios::out | std::ios::trunc);
+        if (!timeFile.is_open())
+        {
+            std::cerr << "Error: cannot open file " << timename << std::endl;
+            return;
+        }
+        for (int i = 0; i < (int)poses.points.size(); ++i)
+        {
+            // std::cout << "Type of point.time: " << typeid(poses.points[i].time).name() << std::endl;
+            double time = poses.points[i].time;
+            outFile << std::fixed << std::setprecision(15) << time << " "
+            << poses.points[i].x << " " << poses.points[i].y << " " << poses.points[i].z << " " 
+            << poses.points[i].roll << " " << poses.points[i].pitch << " " << poses.points[i].yaw<< " "
+            << std::endl;
+            timeFile << std::fixed << std::setprecision(15) << time << std::endl;
+        }
+        outFile.close();
+        timeFile.close();
+        std::cout << "Saved trajectory to " << filename << " and " << timename << std::endl;
+    }
+
     void visualizeGlobalMapThread()
     {
         rclcpp::Rate rate(0.2);
@@ -414,7 +444,8 @@ public:
         int unused = system((std::string("exec rm -r ") + savePCDDirectory).c_str());
         unused = system((std::string("mkdir ") + savePCDDirectory).c_str());
         pcl::io::savePCDFileASCII(savePCDDirectory + "trajectory.pcd", *cloudKeyPoses3D);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "transformations.pcd", *cloudKeyPoses6D);
+        // pcl::io::savePCDFileASCII(savePCDDirectory + "transformations.pcd", *cloudKeyPoses6D);
+        saveTrajectoryToTXT(savePCDDirectory + "transformations.txt", savePCDDirectory + "times.txt", *cloudKeyPoses6D);
         pcl::PointCloud<PointType>::Ptr globalCornerCloud(new pcl::PointCloud<PointType>());
         pcl::PointCloud<PointType>::Ptr globalCornerCloudDS(new pcl::PointCloud<PointType>());
         pcl::PointCloud<PointType>::Ptr globalSurfCloud(new pcl::PointCloud<PointType>());
